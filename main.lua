@@ -23,7 +23,6 @@ statusCount = 0;
 
 
 
-
 function love.load()    
     push:setupScreen(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         vsync = true,
@@ -34,8 +33,8 @@ function love.load()
     math.randomseed(os.time())
 
     --              The color list is derived from 24-bit values. Bits 0-7 are blue, 8-15 are green, and 16-23 are red.
-    colorlist = {   16711680,   16744448,   16776960,   8453888,    65280,  65408,  65535,  33023,  255,    8388863,    16711935,   16711808}
-    --              red         orange      yellow      litegreen   green   teal    aqua    indigo  blue    purple      magenta     pink
+    colorlist = {   16711680,   16744448,   16776960,   8453888,    65280,      65408,      65535,      33023,      255,        8388863,    16711935,   16711808}
+    --              red         orange      yellow      litegreen   green       teal        aqua        indigo      blue        purple      magenta     pink
 
     setColorWith24BitVal(colorlist[icolor])
 
@@ -48,7 +47,6 @@ end
 
 
 
-
 function love.update(dt) 
     myTimer = myTimer + dt
     if myTimer < .0625 then
@@ -56,16 +54,13 @@ function love.update(dt)
     end    
     myTimer = 0
     
-    icolor = icolor + 1
-    if icolor > 12 then icolor = 1 end
-    setColorWith24BitVal(colorlist[icolor])
-
     if youWon then
         displayWinMessage()
         checkForResetKeyPress()
         do return end
     end
 
+    updateColor(1)
     checkRules()
     checkForLeftClick()
     checkForResetKeyPress()
@@ -85,7 +80,6 @@ end
 
 
 
-
 function love.draw()
     for i=1, cellCount, 1 do
         if grid[i].state == 1 then
@@ -94,7 +88,6 @@ function love.draw()
         end
     end
 end
-
 
 
 
@@ -113,7 +106,6 @@ end
 
 
 
-
 function setColorWith24BitVal(sum)
     tsum = sum
     blueG = tsum % 256
@@ -123,6 +115,7 @@ function setColorWith24BitVal(sum)
 
     redG = (tsum - greenG) / 256
 end
+
 
 
 function checkRules()    
@@ -147,7 +140,6 @@ function checkRules()
         end
     end
 end
-
 
 
 
@@ -177,13 +169,22 @@ end
 function displayWinMessage()
     newState = getWinScreen()
     for i=1, cellCount, 1 do
-
         if newState[i] == 1 then
             grid[i]:revive( redG,  greenG, blueG )
+            updateColor(1)
         else
             grid[i]:die()
         end
     end
+end
+
+
+
+function updateColor(add)
+    icolor = icolor + add
+    if icolor > 12 then icolor = 1 end
+    if icolor < 1 then icolor = 12 end
+    setColorWith24BitVal(colorlist[icolor])
 end
 
 

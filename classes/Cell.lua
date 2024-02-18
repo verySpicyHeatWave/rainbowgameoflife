@@ -10,7 +10,7 @@ function Cell:init(state, red, green, blue, x, y)
 end
 
 
-function Cell:revive(red, blue, green)
+function Cell:revive(red, green, blue)
     self.state = 1
     self.red = red
     self.green = green
