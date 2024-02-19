@@ -15,6 +15,7 @@ A left click in the grid allows the user to place their own cell. On its own, th
 However, a strategically placed cell near some other clusters can create some cool effects, or simply clear a block.  
 If the user holds down the mouse button, then that cell will stay alive despite the rules. You are God!  
 Pressing the 'R' key will reset the game. You can hold it down for a crazy TV-static type of effect, or just tap it to reinvigorate the board.  
+Pressing the 'W' key will resize your window for you, just in case your monitor can't handle the original resolution. There are four resize settings.
 
 If the user can completely clear the board, then the user wins. Congratulations, you eradicated all life! You monster!
 

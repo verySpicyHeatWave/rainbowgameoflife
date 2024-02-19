@@ -3,10 +3,12 @@ Class = require 'libraries/class'
 
 require 'classes/Cell'
 
-WINDOW_WIDTH = 2000
-WINDOW_HEIGHT = 1200
+WIDTHSTORE = {1200, 1500, 1800, 2000}
+windex = #WIDTHSTORE
+WINDOW_WIDTH = WIDTHSTORE[windex]
+WINDOW_HEIGHT = (WINDOW_WIDTH / 5) * 3
 
-CELL_SIZE = 20
+CELL_SIZE = WINDOW_WIDTH / 100
 cols = WINDOW_WIDTH / CELL_SIZE
 rows = WINDOW_HEIGHT / CELL_SIZE
 cellCount = rows * cols
@@ -24,11 +26,8 @@ statusCount = 0;
 
 
 function love.load()    
-    push:setupScreen(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
-        vsync = true,
-        fullscreen = false,
-        resizable = false
-    })
+
+    updateWindow() 
     love.window.setTitle('Rainbow Game of Life!')
     math.randomseed(os.time())
 
@@ -59,7 +58,7 @@ function love.update(dt)
         checkForResetKeyPress()
         do return end
     end
-
+    
     updateColor(1)
     checkRules()
     checkForLeftClick()
@@ -76,6 +75,7 @@ function love.update(dt)
             end
         end
     end
+    checkForWindowResize()
 end
 
 
@@ -91,7 +91,7 @@ end
 
 
 
-function checkneighbors(x, y)
+function checkneighbors(i, x, y)
     sum = 0
     for i=x-1, x+1, 1 do
         for j=y-1, y+1, 1 do
@@ -100,7 +100,7 @@ function checkneighbors(x, y)
             sum = sum + grid[(c + (r * cols)) + 1].state
         end
     end
-    sum = sum - grid[(x + (y * cols)) + 1].state
+    sum = sum - grid[i].state
     return sum
 end
 
@@ -121,7 +121,7 @@ end
 function checkRules()    
     statusCount = 0
     for i=1, cellCount, 1 do
-        local neighbors = checkneighbors(grid[i].x, grid[i].y)
+        local neighbors = checkneighbors(i, grid[i].x, grid[i].y)
 
         if grid[i].state == 1 then
             if neighbors < 2 or neighbors > 3 then
@@ -139,6 +139,35 @@ function checkRules()
             youWon = true
         end
     end
+end
+
+
+
+function checkForWindowResize()
+    if love.keyboard.isDown('w') then
+        windex = (windex % #WIDTHSTORE) + 1
+        updateWindowValues()
+        updateWindow()
+    end
+
+end
+
+
+
+function updateWindowValues()
+    WINDOW_WIDTH = WIDTHSTORE[windex]
+    WINDOW_HEIGHT = (WINDOW_WIDTH / 5) * 3
+    CELL_SIZE = WINDOW_WIDTH / 100
+end
+
+
+
+function updateWindow()
+    push:setupScreen(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
+        vsync = true,
+        fullscreen = false,
+        resizable = true
+    })
 end
 
 
