@@ -9,9 +9,9 @@ WINDOW_WIDTH = WIDTHSTORE[windex]
 WINDOW_HEIGHT = (WINDOW_WIDTH / 5) * 3
 
 CELL_SIZE = WINDOW_WIDTH / 100
-cols = WINDOW_WIDTH / CELL_SIZE
-rows = WINDOW_HEIGHT / CELL_SIZE
-cellCount = rows * cols
+COLS = WINDOW_WIDTH / CELL_SIZE
+ROWS = WINDOW_HEIGHT / CELL_SIZE
+cellCount = ROWS * COLS
 grid = {}
 newState = {}
 icolor = 1
@@ -38,8 +38,8 @@ function love.load()
     setColorWith24BitVal(colorlist[icolor])
 
     for i=1, cellCount, 1 do
-        xIndex  = (i - 1) % cols
-        yIndex  = ((i - 1 - xIndex) / rows) * WINDOW_HEIGHT / WINDOW_WIDTH
+        xIndex  = (i - 1) % COLS
+        yIndex  = ((i - 1 - xIndex) / ROWS) * WINDOW_HEIGHT / WINDOW_WIDTH
         grid[i] = Cell(math.floor(math.random() + 0.5), redG, greenG, blueG, xIndex, yIndex)
     end
 end
@@ -59,7 +59,7 @@ function love.update(dt)
         do return end
     end
     
-    updateColor(1)
+    incrementgColor(1)
     checkRules()
     checkForLeftClick()
     checkForResetKeyPress()
@@ -95,9 +95,9 @@ function checkneighbors(i, x, y)
     sum = 0
     for i=x-1, x+1, 1 do
         for j=y-1, y+1, 1 do
-            c = (i + cols) % cols
-            r = (j + rows) % rows
-            sum = sum + grid[(c + (r * cols)) + 1].state
+            c = (i + COLS) % COLS
+            r = (j + ROWS) % ROWS
+            sum = sum + grid[(c + (r * COLS)) + 1].state
         end
     end
     sum = sum - grid[i].state
@@ -107,6 +107,9 @@ end
 
 
 function setColorWith24BitVal(sum)
+    if sum == nil then
+        return
+    end
     tsum = sum
     blueG = tsum % 256
 
@@ -178,7 +181,7 @@ function checkForLeftClick()
         mouseY = love.mouse.getY()
         mouseX = (mouseX - (mouseX % CELL_SIZE)) / CELL_SIZE + 1
         mouseY = (mouseY - (mouseY % CELL_SIZE)) / CELL_SIZE
-        newState[(mouseX + (mouseY * cols))] = 1
+        newState[(mouseX + (mouseY * COLS))] = 1
     end
 end
 
@@ -197,10 +200,14 @@ end
 
 function displayWinMessage()
     newState = getWinScreen()
+    icolor = (icolor - 1) % 12
     for i=1, cellCount, 1 do
+        col = ((i - 1) % COLS)
+        row = ((i - 1 - col) / ROWS) * WINDOW_HEIGHT / WINDOW_WIDTH
+        newcolindex = ((col + row + icolor) % 12) 
+        setgColor(newcolindex)
         if newState[i] == 1 then
-            grid[i]:revive( redG,  greenG, blueG )
-            updateColor(1)
+            grid[i]:revive( redG, greenG, blueG )
         else
             grid[i]:die()
         end
@@ -209,11 +216,19 @@ end
 
 
 
-function updateColor(add)
+function incrementgColor(add)
     icolor = icolor + add
     if icolor > 12 then icolor = 1 end
     if icolor < 1 then icolor = 12 end
     setColorWith24BitVal(colorlist[icolor])
+end
+
+
+
+function setgColor(setting)
+    if setting > 12 then setting = 1 end
+    if setting < 1 then setting = 12 end
+    setColorWith24BitVal(colorlist[setting])
 end
 
 
